@@ -1,44 +1,40 @@
 # AWS Serverless ETL Pipeline (S3 → Lambda → Glue → Athena)
 
-This project demonstrates the design of a serverless ETL pipeline on AWS:
+This project demonstrates the design of a **serverless data pipeline** on AWS using:
 
-- **S3**: stores raw JSON data
-- **Lambda**: validates and preprocesses incoming records
-- **Glue**: transforms data and writes partitioned output (e.g., Parquet)
-- **Athena**: queries the transformed data using SQL
+- **Amazon S3** for raw data storage  
+- **AWS Lambda** for event-driven validation and preprocessing  
+- **AWS Glue** for ETL transformations  
+- **Amazon Athena** for SQL-based analytics  
 
-The code in this repository simulates the logic of the Lambda and Glue jobs locally in Python so it can be understood and tested without an AWS account.
+The code in this repository simulates the Lambda and Glue logic locally in Python so the pipeline can be understood and tested without an active AWS account.
 
 ---
 
-## 🏗 Architecture
+## 🏗 Architecture Overview
 
-1. Raw JSON files are uploaded to an S3 bucket.
-2. An S3 event triggers a **Lambda function**:
-   - Validates required fields
-   - Filters out malformed records
-   - Writes cleaned data to another S3 location
-3. An **AWS Glue ETL job**:
-   - Reads cleaned data
-   - Normalizes and transforms fields
-   - Writes partitioned output for analytics
-4. **Athena** queries the curated data.
+1. Raw JSON events are uploaded to an S3 bucket.  
+2. An S3 event triggers a **Lambda function** which:
+   - Validates required fields  
+   - Filters invalid records  
+   - Writes cleaned data to a “curated” location  
+3. An **AWS Glue job** reads the cleaned data and:
+   - Normalizes the schema  
+   - Enriches/derives new fields (e.g., buckets, type casting)  
+   - Writes analytics-ready data (e.g., Parquet)  
+4. **Athena** is used to query the curated dataset.
+
+In this repo, S3 and Glue outputs are simulated using local files.
 
 ---
 
 ## 📂 Project Structure
 
-- `src/lambda_function.py` – Lambda handler and validation logic
-- `src/glue_job.py` – Glue-style ETL transformation logic
-- `src/utils.py` – Shared helpers
-- `data/sample_events.json` – Example input events
-- `requirements.txt` – Python dependencies
-
----
-
-## ▶️ Running Locally (Simulation)
-
-```bash
-pip install -r requirements.txt
-python src/lambda_function.py
-python src/glue_job.py
+```text
+src/
+  lambda_function.py  # validation + preprocessing (Lambda simulation)
+  glue_job.py         # ETL transformation (Glue simulation)
+  utils.py            # shared I/O helpers
+data/
+  sample_events.json  # raw example events
+requirements.txt      # Python dependencies (pandas)
